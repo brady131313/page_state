@@ -9,6 +9,10 @@ param_schema = [
     required: true,
     doc: "the type the paramter should be cast to"
   ],
+  default: [
+    type: :any,
+    doc: "the default value of the parameter"
+  ],
   key: [
     type: :string,
     doc: "the key to use in the query string"

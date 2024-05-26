@@ -17,7 +17,7 @@ defmodule DashboardLive do
 
     nested :feed1 do
       param(:sort_by, :string)
-      param(:sort_dir, :string)
+      param(:sort_dir, :string, default: "asc")
       param(:page_number, :integer)
       param(:include_count, :boolean)
     end
@@ -36,7 +36,6 @@ raw_params = %{
   "category" => "some_category",
   "feed1" => %{
     "sort_by" => "first",
-    "sort_dir" => "asc",
     "page_number" => "5",
     "include_count" => "true"
   },

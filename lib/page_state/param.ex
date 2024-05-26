@@ -1,4 +1,4 @@
 defmodule PageState.Param do
   @moduledoc false
-  defstruct [:name, :type, :key]
+  defstruct [:name, :type, :key, :default]
 end

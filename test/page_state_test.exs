@@ -12,6 +12,10 @@ defmodule PageStateTest do
         nested :feed1 do
           param(:page, :integer)
           param(:sort, :string)
+
+          param(:sort_dir, :string) do
+            default("asc")
+          end
         end
 
         nested :feed2 do
@@ -21,21 +25,16 @@ defmodule PageStateTest do
       end
     end
 
-    test "to query string" do
-      %PageStateTestData.State{}
-      %PageStateTestData.State.Feed1{}
-    end
-
     test "decode page state" do
       raw_params = %{
         "tab" => "feed",
         "feed1" => %{
           "page" => "1",
-          "sort" => "asc"
+          "sort" => "first"
         },
         "feed2" => %{
           "page" => "2",
-          "sort" => "desc"
+          "sort" => "other"
         }
       }
 
@@ -43,11 +42,12 @@ defmodule PageStateTest do
                tab: "feed",
                feed1: %PageStateTestData.State.Feed1{
                  page: 1,
-                 sort: "asc"
+                 sort: "first",
+                 sort_dir: "asc"
                },
                feed2: %PageStateTestData.State.Feed2{
                  page: 2,
-                 sort: "desc"
+                 sort: "other"
                }
              } == PageStateTestData.State.decode(raw_params)
     end

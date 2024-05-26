@@ -20,7 +20,7 @@ defmodule PageState.Utils do
         |> Map.get(param.key)
         |> cast_value(param.type)
 
-      {param.name, value}
+      {param.name, value || param.default}
     end
   end
 
