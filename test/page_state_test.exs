@@ -22,8 +22,34 @@ defmodule PageStateTest do
     end
 
     test "to query string" do
-      IO.inspect(%PageStateTestData.State{})
-      IO.inspect(%PageStateTestData.State.Feed1{})
+      %PageStateTestData.State{}
+      %PageStateTestData.State.Feed1{}
+    end
+
+    test "decode page state" do
+      raw_params = %{
+        "tab" => "feed",
+        "feed1" => %{
+          "page" => "1",
+          "sort" => "asc"
+        },
+        "feed2" => %{
+          "page" => "2",
+          "sort" => "desc"
+        }
+      }
+
+      assert %PageStateTestData.State{
+               tab: "feed",
+               feed1: %PageStateTestData.State.Feed1{
+                 page: 1,
+                 sort: "asc"
+               },
+               feed2: %PageStateTestData.State.Feed2{
+                 page: 2,
+                 sort: "desc"
+               }
+             } == PageStateTestData.State.decode(raw_params)
     end
   end
 

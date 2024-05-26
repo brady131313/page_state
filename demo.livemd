@@ -1,0 +1,51 @@
+# PageState Demo
+
+```elixir
+Mix.install([
+  {:page_state, path: __DIR__}
+])
+```
+
+## Section
+
+```elixir
+defmodule DashboardLive do
+  use PageState
+
+  params do
+    param(:category, :string)
+
+    nested :feed1 do
+      param(:sort_by, :string)
+      param(:sort_dir, :string)
+      param(:page_number, :integer)
+      param(:include_count, :boolean)
+    end
+
+    nested :feed2 do
+      param(:sort_by, :string)
+      param(:sort_dir, :string)
+      param(:page_number, :integer)
+    end
+  end
+end
+```
+
+```elixir
+raw_params = %{
+  "category" => "some_category",
+  "feed1" => %{
+    "sort_by" => "first",
+    "sort_dir" => "asc",
+    "page_number" => "5",
+    "include_count" => "true"
+  },
+  "feed2" => %{
+    "sort_by" => "other",
+    "sort_dir" => "desc",
+    "page_number" => "10"
+  }
+}
+
+DashboardLive.State.decode(raw_params)
+```

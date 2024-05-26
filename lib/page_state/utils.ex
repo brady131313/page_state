@@ -12,4 +12,29 @@ defmodule PageState.Utils do
 
     length(names) == length(unique_names)
   end
+
+  def decode_params(raw_params, params) do
+    for param <- params do
+      value =
+        raw_params
+        |> Map.get(param.key)
+        |> cast_value(param.type)
+
+      {param.name, value}
+    end
+  end
+
+  defp cast_value(value, :string), do: value
+
+  defp cast_value(value, :integer) do
+    case Integer.parse(value) do
+      {int, ""} -> int
+      _ -> nil
+    end
+  end
+
+  defp cast_value("true", :boolean), do: true
+  defp cast_value("false", :boolean), do: false
+
+  defp cast_value(_, _type), do: nil
 end
