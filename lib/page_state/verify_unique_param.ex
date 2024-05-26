@@ -31,14 +31,14 @@ defmodule PageState.VerifyUniqueParam do
         {:error,
          Spark.Error.DslError.exception(
            message: "parameter keys must be unique",
-           module: Transformer.get_persisted(dsl_state, :module)
+           module: Info.struct(dsl_state)
          )}
 
       not Utils.unique_by?(params, :name) ->
         {:error,
          Spark.Error.DslError.exception(
            message: "parameter names must be unique",
-           module: Transformer.get_persisted(dsl_state, :module)
+           module: Info.struct(dsl_state)
          )}
 
       true ->

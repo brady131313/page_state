@@ -1,5 +1,9 @@
 defmodule PageState.Info do
   @moduledoc false
+  def struct(page_state) do
+    Spark.Dsl.Extension.get_persisted(page_state, :module)
+  end
+
   def params(page_state) do
     page_state
     |> Spark.Dsl.Extension.get_entities([:params])

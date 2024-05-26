@@ -62,6 +62,7 @@ defmodule PageState.Dsl do
   use Spark.Dsl.Extension,
     sections: [params],
     transformers: [
-      PageState.VerifyUniqueParam
+      PageState.VerifyUniqueParam,
+      PageState.CreateStateTransformer
     ]
 end

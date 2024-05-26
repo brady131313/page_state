@@ -2,7 +2,8 @@ defmodule PageStateTest do
   use ExUnit.Case
 
   describe "to and from query string" do
-    defmodule PageStateTest do
+    defmodule PageStateTestData do
+      @moduledoc false
       use PageState
 
       params do
@@ -21,7 +22,8 @@ defmodule PageStateTest do
     end
 
     test "to query string" do
-      IO.inspect(PageState.Info.nested_params(PageStateTest))
+      IO.inspect(%PageStateTestData.State{})
+      IO.inspect(%PageStateTestData.State.Feed1{})
     end
   end
 
