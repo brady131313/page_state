@@ -5,12 +5,17 @@ param_schema = [
     doc: "the name of the parameter"
   ],
   type: [
-    type: {:one_of, [:string, :integer, :boolean]},
+    type:
+      {:or,
+       [
+         {:one_of, [:string, :integer, :boolean]},
+         {:tuple, [{:literal, :one_of}, {:or, [{:list, :string}, {:list, :atom}]}]}
+       ]},
     required: true,
     doc: "the type the paramter should be cast to"
   ],
   default: [
-    type: :any,
+    type: :literal,
     doc: "the default value of the parameter"
   ],
   key: [
@@ -25,7 +30,7 @@ param = %Spark.Dsl.Entity{
   target: PageState.Param,
   schema: param_schema,
   args: [:name, :type],
-  transform: {PageState.Utils, :set_default_key, []}
+  transform: {PageState.Utils, :transform_param, []}
 }
 
 nested_param_schema = [

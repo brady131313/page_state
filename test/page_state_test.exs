@@ -1,6 +1,47 @@
 defmodule PageStateTest do
   use ExUnit.Case
 
+  describe "encodes and decodes into same data" do
+    defmodule EncodeDecodeTest do
+      use PageState
+
+      params do
+        param(:string_key, :string, key: "some_string")
+        param(:integer_key, :integer, key: "some_integer")
+        param(:boolean_key, :boolean, key: "some_boolean")
+
+        param(:string_choice, {:one_of, ["choice_one", "choice_two"]}, key: "some_string_choice")
+        param(:atom_choice, {:one_of, [:other_one, :other_two]}, key: "some_atom_choice")
+
+        nested :nested_key do
+          key("some_nested")
+          param(:nested_string_key, :string, key: "nested_string")
+          param(:nested_integer_key, :integer, key: "nested_integer")
+          param(:nested_boolean_key, :boolean, key: "nested_boolean")
+        end
+      end
+    end
+
+    test "it works" do
+      state = %EncodeDecodeTest.State{
+        string_key: "string",
+        integer_key: 42,
+        boolean_key: true,
+        string_choice: "choice_one",
+        atom_choice: :other_one,
+        nested_key: %EncodeDecodeTest.State.NestedKey{
+          nested_string_key: "nested string",
+          nested_integer_key: 24,
+          nested_boolean_key: false
+        }
+      }
+
+      assert state
+             |> EncodeDecodeTest.State.encode()
+             |> EncodeDecodeTest.State.decode() == state
+    end
+  end
+
   describe "to and from query string" do
     defmodule PageStateTestData do
       @moduledoc false
@@ -50,6 +91,34 @@ defmodule PageStateTest do
                  sort: "other"
                }
              } == PageStateTestData.State.decode(raw_params)
+    end
+
+    test "encode page state" do
+      state = %PageStateTestData.State{
+        tab: "feed",
+        feed1: %PageStateTestData.State.Feed1{
+          page: 1,
+          sort: "first",
+          sort_dir: "asc"
+        },
+        feed2: %PageStateTestData.State.Feed2{
+          page: 2,
+          sort: "other"
+        }
+      }
+
+      assert %{
+               "tab" => "feed",
+               "feed1" => %{
+                 "page" => "1",
+                 "sort" => "first",
+                 "sort_dir" => "asc"
+               },
+               "feed2" => %{
+                 "page" => "2",
+                 "sort" => "other"
+               }
+             } == PageStateTestData.State.encode(state)
     end
   end
 

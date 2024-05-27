@@ -47,10 +47,20 @@ defmodule PageState.CreateStateTransformer do
               {nested_param.name, struct(nested_module, nested_params)}
             end
 
-          struct(unquote(state_module), params ++ nested_params)
+          struct(__MODULE__, params ++ nested_params)
         end
 
-        def encode(%state_module{} = state) do
+        def encode(%__MODULE__{} = state) do
+          params = PageState.Utils.encode_params(state, unquote(params))
+
+          nested_params =
+            for {nested_param, _} <- unquote(nested_state_params_and_modules) do
+              nested_params = Map.get(state, nested_param.name)
+              value = PageState.Utils.encode_params(nested_params, nested_param.params)
+              {nested_param.key, Map.new(value)}
+            end
+
+          Map.new(params ++ nested_params)
         end
       end,
       Macro.Env.location(__ENV__)
@@ -61,7 +71,7 @@ defmodule PageState.CreateStateTransformer do
     nested_module_name =
       nested_param.name
       |> Atom.to_string()
-      |> String.capitalize()
+      |> Macro.camelize()
 
     nested_state_module = Module.concat([state_module, nested_module_name])
     attributes = Enum.map(nested_param.params, & &1.name)

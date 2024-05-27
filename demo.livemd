@@ -13,7 +13,7 @@ defmodule DashboardLive do
   use PageState
 
   params do
-    param(:category, :string)
+    param(:category, {:one_of, [:a, :b, :c]}, default: :a)
 
     nested :feed1 do
       param(:sort_by, :string)
@@ -33,7 +33,7 @@ end
 
 ```elixir
 raw_params = %{
-  "category" => "some_category",
+  "category" => "b",
   "feed1" => %{
     "sort_by" => "first",
     "page_number" => "5",
@@ -46,5 +46,25 @@ raw_params = %{
   }
 }
 
-DashboardLive.State.decode(raw_params)
+state = DashboardLive.State.decode(raw_params)
+```
+
+```elixir
+schema =
+  Spark.Options.new!(
+    result: [
+      type:
+        {:one_of,
+         [
+           :string,
+           :integer,
+           :boolean,
+           {:tuple, [:atom, {:list, :string}]}
+         ]}
+    ]
+  )
+```
+
+```elixir
+Spark.Options.validate([result: "test"], schema)
 ```
