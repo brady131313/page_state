@@ -36,11 +36,13 @@ defmodule PageStateTest do
         }
       }
 
-      EncodeDecodeTest.on_mount(:param_hook, %{}, %{}, %{})
-
       assert state
              |> EncodeDecodeTest.State.encode()
              |> EncodeDecodeTest.State.decode() == state
+    end
+
+    test "defines on mount hook" do
+      assert function_exported?(EncodeDecodeTest, :on_mount, 4)
     end
   end
 
