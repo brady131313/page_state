@@ -3,7 +3,7 @@ defmodule PageStateTest do
 
   describe "encodes and decodes into same data" do
     defmodule EncodeDecodeTest do
-      use PageState
+      use PageState, attach_hook?: true
 
       params do
         param(:string_key, :string, key: "some_string")
@@ -35,6 +35,8 @@ defmodule PageStateTest do
           nested_boolean_key: false
         }
       }
+
+      EncodeDecodeTest.on_mount(:param_hook, %{}, %{}, %{})
 
       assert state
              |> EncodeDecodeTest.State.encode()
