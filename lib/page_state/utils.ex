@@ -53,7 +53,7 @@ defmodule PageState.Utils do
 
   defp cast_value(value, %Param{type: :string}), do: value
 
-  defp cast_value(value, %Param{type: :integer}) do
+  defp cast_value(value, %Param{type: :integer}) when not is_nil(value) do
     case Integer.parse(value) do
       {int, ""} -> int
       _ -> nil

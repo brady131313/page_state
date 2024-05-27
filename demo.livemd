@@ -13,19 +13,18 @@ defmodule DashboardLive do
   use PageState
 
   params do
-    param(:category, {:one_of, [:a, :b, :c]}, default: :a)
-
-    nested :feed1 do
-      param(:sort_by, :string)
-      param(:sort_dir, :string, default: "asc")
-      param(:page_number, :integer)
-      param(:include_count, :boolean)
+    param :query, :string do
+      key("q")
     end
 
-    nested :feed2 do
-      param(:sort_by, :string)
-      param(:sort_dir, :string)
-      param(:page_number, :integer)
+    param(:include_count, :boolean, default: false)
+    param(:category, {:one_of, [:a, :b, :c]}, default: :a)
+
+    nested :task_section do
+      key("t")
+      param(:page_number, :integer, default: 1)
+      param(:page_size, :integer, default: 10)
+      param(:sort_dir, {:one_of, [:asc, :desc]}, default: :asc)
     end
   end
 end
@@ -33,16 +32,11 @@ end
 
 ```elixir
 raw_params = %{
-  "category" => "b",
-  "feed1" => %{
-    "sort_by" => "first",
-    "page_number" => "5",
-    "include_count" => "true"
-  },
-  "feed2" => %{
-    "sort_by" => "other",
-    "sort_dir" => "desc",
-    "page_number" => "10"
+  "q" => "some search",
+  "include_count" => "true",
+  "t" => %{
+    "page_number" => "2",
+    "page_size" => "20"
   }
 }
 
@@ -50,21 +44,14 @@ state = DashboardLive.State.decode(raw_params)
 ```
 
 ```elixir
-schema =
-  Spark.Options.new!(
-    result: [
-      type:
-        {:one_of,
-         [
-           :string,
-           :integer,
-           :boolean,
-           {:tuple, [:atom, {:list, :string}]}
-         ]}
-    ]
-  )
-```
-
-```elixir
-Spark.Options.validate([result: "test"], schema)
+DashboardLive.State.encode(%DashboardLive.State{
+  query: "some search",
+  include_count: true,
+  category: :b,
+  task_section: %DashboardLive.State.TaskSection{
+    page_number: 2,
+    page_size: 20,
+    sort_dir: :desc
+  }
+})
 ```
