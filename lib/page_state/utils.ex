@@ -1,7 +1,7 @@
 defmodule PageState.Utils do
   @moduledoc false
 
-  alias PageState.Param
+  alias PageState.Dsl.Param
 
   def transform_param(%Param{} = param) do
     with {:ok, param} <- set_default_key(param) do
@@ -32,9 +32,17 @@ defmodule PageState.Utils do
   def encode_params(state, params) do
     for param <- params do
       value = Map.get(state, param.name)
-      {param.key, to_string(value)}
+      {param.key, dump_value(value, param)}
     end
   end
+
+  defp dump_value(value, %Param{type: {:one_of, _options}}), do: to_string(value)
+
+  defp dump_value(value, %Param{type: {type_module, opts}}) when is_atom(type_module) and is_list(opts) do
+    type_module.dump(value, opts)
+  end
+
+  defp dump_value(value, _param), do: to_string(value)
 
   def decode_params(raw_params, params) do
     for param <- params do
@@ -73,6 +81,10 @@ defmodule PageState.Utils do
     if value in str_options do
       value
     end
+  end
+
+  defp cast_value(value, %Param{type: {type_module, opts}}) when is_atom(type_module) and is_list(opts) do
+    type_module.cast(value, opts)
   end
 
   defp cast_value(_, _type), do: nil

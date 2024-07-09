@@ -142,17 +142,17 @@ defmodule PageStateTest do
       end
     end
 
-    assert PageState.Info.params(PageStateWorks) == [
-             %PageState.Param{name: :page_number, type: :integer, key: "page_number"},
-             %PageState.Param{name: :type, type: :string, key: "type_key"}
+    assert PageState.Dsl.Info.params(PageStateWorks) == [
+             %PageState.Dsl.Param{name: :page_number, type: :integer, key: "page_number"},
+             %PageState.Dsl.Param{name: :type, type: :string, key: "type_key"}
            ]
 
-    assert PageState.Info.nested_params(PageStateWorks) == [
-             %PageState.NestedParam{
+    assert PageState.Dsl.Info.nested_params(PageStateWorks) == [
+             %PageState.Dsl.NestedParam{
                name: :nested_param,
                key: "nested_test",
                params: [
-                 %PageState.Param{name: :page_number, type: :string, key: "page_number"}
+                 %PageState.Dsl.Param{name: :page_number, type: :string, key: "page_number"}
                ]
              }
            ]
@@ -231,6 +231,47 @@ defmodule PageStateTest do
           end
         end
       end
+    end
+  end
+
+  describe "custom types" do
+    defmodule CustomType do
+      @moduledoc false
+
+      @behaviour PageState.Type
+
+      @impl true
+      def cast("fourty-two", _opts) do
+        42
+      end
+
+      @impl true
+      def dump(42, _opts) do
+        "fourty-two"
+      end
+    end
+
+    defmodule PageStateCustomType do
+      @moduledoc false
+      use PageState
+
+      params do
+        param(:custom, {CustomType, value: 42})
+      end
+    end
+
+    test "it works" do
+      assert PageState.Dsl.Info.params(PageStateCustomType) == [
+               %PageState.Dsl.Param{name: :custom, key: "custom", type: {CustomType, value: 42}}
+             ]
+
+      raw_params = %{"custom" => "fourty-two"}
+
+      decoded = PageStateCustomType.State.decode(raw_params)
+      assert %PageStateCustomType.State{custom: 42} == decoded
+
+      encoded = PageStateCustomType.State.encode(decoded)
+      assert raw_params == encoded
     end
   end
 end

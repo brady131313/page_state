@@ -9,7 +9,8 @@ param_schema = [
       {:or,
        [
          {:one_of, [:string, :integer, :boolean]},
-         {:tuple, [{:literal, :one_of}, {:or, [{:list, :string}, {:list, :atom}]}]}
+         {:tuple, [{:literal, :one_of}, {:or, [{:list, :string}, {:list, :atom}]}]},
+         {:spark_behaviour, PageState.Type}
        ]},
     required: true,
     doc: "the type the paramter should be cast to"
@@ -27,7 +28,7 @@ param_schema = [
 param = %Spark.Dsl.Entity{
   name: :param,
   describe: "parameter stored in a query string",
-  target: PageState.Param,
+  target: PageState.Dsl.Param,
   schema: param_schema,
   args: [:name, :type],
   transform: {PageState.Utils, :transform_param, []}
@@ -48,7 +49,7 @@ nested_param_schema = [
 nested_param = %Spark.Dsl.Entity{
   name: :nested,
   describe: "Adds a nested parameter stored in a query string",
-  target: PageState.NestedParam,
+  target: PageState.Dsl.NestedParam,
   schema: nested_param_schema,
   args: [:name],
   transform: {PageState.Utils, :set_default_key, []},
@@ -71,7 +72,7 @@ defmodule PageState.Dsl do
   use Spark.Dsl.Extension,
     sections: [params],
     transformers: [
-      PageState.VerifyUniqueParam,
-      PageState.CreateStateTransformer
+      PageState.Dsl.VerifyUniqueParam,
+      PageState.Dsl.CreateStateTransformer
     ]
 end

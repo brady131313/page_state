@@ -1,8 +1,8 @@
-defmodule PageState.VerifyUniqueParam do
+defmodule PageState.Dsl.VerifyUniqueParam do
   @moduledoc false
   use Spark.Dsl.Transformer
 
-  alias PageState.Info
+  alias PageState.Dsl.Info
   alias PageState.Utils
   alias Spark.Dsl.Transformer
 
