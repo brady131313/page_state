@@ -15,6 +15,10 @@ defmodule PageState.LiveView do
         state = unquote(page_state).decode(params)
         {:cont, Phoenix.Component.assign(socket, page_state: state)}
       end
+
+      def encode_page_state(state) do
+        unquote(page_state).encode(state)
+      end
     end
   end
 end

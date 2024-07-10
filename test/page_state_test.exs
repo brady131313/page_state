@@ -44,6 +44,10 @@ defmodule PageStateTest do
     test "defines on mount hook" do
       assert function_exported?(EncodeDecodeTest, :on_mount, 4)
     end
+
+    test "defines encode state function" do
+      assert function_exported?(EncodeDecodeTest, :encode_page_state, 1)
+    end
   end
 
   describe "to and from query string" do
