@@ -56,9 +56,57 @@ defmodule PageStateTest do
       }
 
       assert %{string_key: "STRING"} = update_in(state.string_key, &String.upcase/1)
-      assert %{nested_key: %{nested_string_key: "NESTED STRING"}} = update_in(state.nested_key.nested_string_key, &String.upcase/1)
+
+      assert %{nested_key: %{nested_string_key: "NESTED STRING"}} =
+               update_in(state.nested_key.nested_string_key, &String.upcase/1)
 
       assert %{integer_key: 100} = put_in(state.integer_key, 100)
+    end
+
+    test "merge new params" do
+      state = %EncodeDecodeTest.State{
+        string_key: "string",
+        integer_key: 42,
+        boolean_key: true,
+        string_choice: "choice_one",
+        atom_choice: :other_one,
+        nested_key: %EncodeDecodeTest.State.NestedKey{
+          nested_string_key: "nested string",
+          nested_integer_key: 24,
+          nested_boolean_key: false
+        }
+      }
+
+      merged = EncodeDecodeTest.State.merge(state, string_key: "new string", integer_key: 100)
+
+      assert %EncodeDecodeTest.State{
+               string_key: "new string",
+               integer_key: 100,
+               boolean_key: true,
+               string_choice: "choice_one",
+               atom_choice: :other_one,
+               nested_key: %EncodeDecodeTest.State.NestedKey{
+                 nested_string_key: "nested string",
+                 nested_integer_key: 24,
+                 nested_boolean_key: false
+               }
+             } == merged
+
+      nested =
+        EncodeDecodeTest.State.merge(state, nested_key: [nested_string_key: "new nested string"])
+
+      assert %EncodeDecodeTest.State{
+               string_key: "string",
+               integer_key: 42,
+               boolean_key: true,
+               string_choice: "choice_one",
+               atom_choice: :other_one,
+               nested_key: %EncodeDecodeTest.State.NestedKey{
+                 nested_string_key: "new nested string",
+                 nested_integer_key: 24,
+                 nested_boolean_key: false
+               }
+             } == nested
     end
 
     test "defines on mount hook" do

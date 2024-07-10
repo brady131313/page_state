@@ -19,6 +19,10 @@ defmodule PageState.LiveView do
       def encode_page_state(state) do
         unquote(page_state).encode(state)
       end
+
+      def merge_page_state(state, new_state) do
+        unquote(page_state).merge(state, new_state)
+      end
     end
   end
 end

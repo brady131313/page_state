@@ -63,6 +63,10 @@ defmodule PageState.Dsl.CreateStateTransformer do
 
           Map.new(params ++ nested_params)
         end
+
+        def merge(%__MODULE__{} = state, new_state) do
+          Utils.merge_state(state, new_state)
+        end
       end,
       Macro.Env.location(__ENV__)
     )

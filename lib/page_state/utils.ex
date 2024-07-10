@@ -88,4 +88,25 @@ defmodule PageState.Utils do
   end
 
   defp cast_value(_, _type), do: nil
+
+  @doc """
+  Merge the enumerable of new state attributes into the existing state. 
+  attributes not in the new state are left unchanged.
+  `new_state` can be nested.
+  """
+  def merge_state(page_state, new_state) do
+    for {key, value} <- new_state, reduce: page_state do
+      page_state ->
+        case Map.get(page_state, key) do
+          nil ->
+            page_state
+
+          existing when is_map(existing) ->
+            %{page_state | key => merge_state(existing, value)}
+
+          _ ->
+            %{page_state | key => value}
+        end
+    end
+  end
 end
